@@ -18,35 +18,30 @@ yay -S --noconfirm --needed \
   walker-bin libqalculate xdg-desktop-portal-gtk polkit-gnome
 
 if [ "$OMARCHY_SOFTWARE_ONLY" = "1" ]; then
-  # Install software-only dependencies
+  # Install software-only dependencies and desktop file
   yay -S --noconfirm --needed \
     polybar dunst picom i3-wm betterlockscreen dmenu feh \
     xorg-server xorg-xinit
-else
-  # Install hardware-accelerated dependencies
-  yay -S --noconfirm --needed \
-    waybar mako swaybg swayosd hyprland hyprshot hyprpicker \
-    hyprlock hypridle hyprsunset hyprland-qtutils \
-    xdg-desktop-portal-hyprland
-fi
-
-# Create desktop entry for the chosen window manager
-if [ "$OMARCHY_WINDOW_MANAGER" = "hyprland" ] && [ ! -f /usr/share/wayland-sessions/hyprland.desktop ]; then
-  sudo mkdir -p /usr/share/wayland-sessions
-  sudo tee /usr/share/wayland-sessions/hyprland.desktop <<EOF
-[Desktop Entry]
-Name=Hyprland
-Comment=An intelligent dynamic tiling Wayland compositor
-Exec=Hyprland
-Type=Application
-EOF
-elif [ "$OMARCHY_WINDOW_MANAGER" = "i3" ] && [ ! -f /usr/share/xsessions/i3.desktop ]; then
   sudo mkdir -p /usr/share/xsessions
   sudo tee /usr/share/xsessions/i3.desktop <<EOF
 [Desktop Entry]
 Name=i3
 Comment=A tiling window manager
 Exec=i3
+Type=Application
+EOF
+else
+  # Install hardware-accelerated dependencies and desktop file
+  yay -S --noconfirm --needed \
+    waybar mako swaybg swayosd hyprland hyprshot hyprpicker \
+    hyprlock hypridle hyprsunset hyprland-qtutils \
+    xdg-desktop-portal-hyprland
+  sudo mkdir -p /usr/share/wayland-sessions
+  sudo tee /usr/share/wayland-sessions/hyprland.desktop <<EOF
+[Desktop Entry]
+Name=Hyprland
+Comment=An intelligent dynamic tiling Wayland compositor
+Exec=Hyprland
 Type=Application
 EOF
 fi
