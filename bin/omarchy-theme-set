@@ -44,10 +44,21 @@ touch "$HOME/.config/alacritty/alacritty.toml"
 
 # Restart components to apply new theme
 pkill -SIGUSR2 btop
-~/.local/share/omarchy/bin/omarchy-restart-waybar
-~/.local/share/omarchy/bin/omarchy-restart-swayosd
-makoctl reload
-hyprctl reload
+
+# Detect session and restart relevant bars/compositors
+if [ "$XDG_SESSION_DESKTOP" = "i3" ] || pgrep -x i3 >/dev/null; then
+  # i3 session: restart Polybar, Picom, Dunst, reload i3 config
+  ~/.local/share/omarchy/bin/omarchy-restart-polybar
+  ~/.local/share/omarchy/bin/omarchy-refresh-picom
+  ~/.local/share/omarchy/bin/omarchy-refresh-dunst
+  i3-msg reload
+else
+  # Hyprland/Wayland session: restart Waybar, SwayOSD, Hyprland
+  ~/.local/share/omarchy/bin/omarchy-restart-waybar
+  ~/.local/share/omarchy/bin/omarchy-restart-swayosd
+  makoctl reload
+  hyprctl reload
+fi
 
 # Set new background
 ~/.local/share/omarchy/bin/omarchy-theme-bg-next

@@ -1,6 +1,14 @@
 #!/bin/bash
 
 OMARCHY_BIN_PATH=~/.local/share/omarchy/bin
+if [[ -f "$HOME/.local/state/omarchy/software-only.mode" ]]; then
+  OMARCHY_SOFTWARE_ONLY=1
+fi
+if [ "$OMARCHY_SOFTWARE_ONLY" = "1" ]; then
+  OMARCHY_WINDOW_MANAGER=i3
+else
+  OMARCHY_WINDOW_MANAGER=hyprland
+fi
 
 menu() {
   local prompt="$1"
@@ -51,14 +59,22 @@ install_font() {
 }
 
 show_learn_menu() {
-  case $(menu "Learn" "  Keybindings\n  Omarchy\n  Hyprland\n󰣇  Arch\n  Neovim\n󱆃  Bash") in
-  *Keybindings*) $OMARCHY_BIN_PATH/omarchy-menu-keybindings ;;
-  *Omarchy*) open_web "https://manuals.omamix.org/2/the-omarchy-manual" ;;
-  *Hyprland*) open_web "https://wiki.hypr.land/" ;;
-  *Arch*) open_web "https://wiki.archlinux.org/title/Main_page" ;;
-  *Bash*) open_web "https://devhints.io/bash" ;;
-  *Neovim*) open_web "https://www.lazyvim.org/keymaps" ;;
-  *) show_main_menu ;;
+  local wm_docs=""
+  if [ "$OMARCHY_SOFTWARE_ONLY" = "1" ]; then
+    wm_docs="  i3"
+  else
+    wm_docs="  Hyprland"
+  fi
+
+  case $(menu "Learn" "  Keybindings\n  Omarchy\n$wm_docs\n󰣇  Arch\n  Neovim\n󱆃  Bash") in
+    *Keybindings*) $OMARCHY_BIN_PATH/omarchy-menu-keybindings ;;
+    *Omarchy*) open_web "https://manuals.omamix.org/2/the-omarchy-manual" ;;
+    *Hyprland*) open_web "https://wiki.hypr.land/" ;;
+    *i3*) open_web "https://i3wm.org/docs/" ;;
+    *Arch*) open_web "https://wiki.archlinux.org/title/Main_page" ;;
+    *Bash*) open_web "https://devhints.io/bash" ;;
+    *Neovim*) open_web "https://www.lazyvim.org/keymaps" ;;
+    *) show_main_menu ;;
   esac
 }
 
@@ -157,17 +173,29 @@ show_setup_power_menu() {
 }
 
 show_setup_config_menu() {
-  case $(menu "Setup" "  Hyprland\n  Hypridle\n  Hyprlock\n  Hyprsunset\n  Swayosd\n󰌧  Walker\n󰍜  Waybar\n󰞅  XCompose") in
-  *Hyprland*) edit_in_nvim ~/.config/hypr/hyprland.conf ;;
-  *Hypridle*) edit_in_nvim ~/.config/hypr/hypridle.conf && ~/.local/share/omarchy/bin/omarchy-restart-hypridle ;;
-  *Hyprlock*) edit_in_nvim ~/.config/hypr/hyprlock.conf ;;
-  *Hyprsunset*) edit_in_nvim ~/.config/hypr/hyprsunset.conf && ~/.local/share/omarchy/bin/omarchy-restart-hyprsunset ;;
-  *Swayosd*) edit_in_nvim ~/.config/swayosd/config.toml && ~/.local/share/omarchy/bin/omarchy-restart-swayosd ;;
-  *Walker*) edit_in_nvim ~/.config/walker/config.toml && ~/.local/share/omarchy/bin/omarchy-restart-walker ;;
-  *Waybar*) edit_in_nvim ~/.config/waybar/config.jsonc && ~/.local/share/omarchy/bin/omarchy-restart-waybar ;;
-  *XCompose*) edit_in_nvim ~/.XCompose && ~/.local/share/omarchy/bin/omarchy-restart-xcompose ;;
-  *) show_main_menu ;;
-  esac
+  if [ "$OMARCHY_SOFTWARE_ONLY" = "1" ]; then
+    case $(menu "Setup" "  i3\n  Polybar\n  Picom\n  Dunst\n󰌧  Walker\n󰞅  XCompose") in
+      *i3*) edit_in_nvim ~/.config/i3/config ;;
+      *Polybar*) edit_in_nvim ~/.config/polybar/config.ini && $OMARCHY_BIN_PATH/omarchy-restart-polybar ;;
+      *Picom*) edit_in_nvim ~/.config/picom/picom.conf ;;
+      *Dunst*) edit_in_nvim ~/.config/dunst/dunstrc ;;
+      *Walker*) edit_in_nvim ~/.config/walker/config.toml && $OMARCHY_BIN_PATH/omarchy-restart-walker ;;
+      *XCompose*) edit_in_nvim ~/.XCompose && $OMARCHY_BIN_PATH/omarchy-restart-xcompose ;;
+      *) show_main_menu ;;
+    esac
+  else
+    case $(menu "Setup" "  Hyprland\n  Hypridle\n  Hyprlock\n  Hyprsunset\n  Swayosd\n󰌧  Walker\n󰍜  Waybar\n󰞅  XCompose") in
+      *Hyprland*) edit_in_nvim ~/.config/hypr/hyprland.conf ;;
+      *Hypridle*) edit_in_nvim ~/.config/hypr/hypridle.conf && $OMARCHY_BIN_PATH/omarchy-restart-hypridle ;;
+      *Hyprlock*) edit_in_nvim ~/.config/hypr/hyprlock.conf ;;
+      *Hyprsunset*) edit_in_nvim ~/.config/hypr/hyprsunset.conf && $OMARCHY_BIN_PATH/omarchy-restart-hyprsunset ;;
+      *Swayosd*) edit_in_nvim ~/.config/swayosd/config.toml && $OMARCHY_BIN_PATH/omarchy-restart-swayosd ;;
+      *Walker*) edit_in_nvim ~/.config/walker/config.toml && $OMARCHY_BIN_PATH/omarchy-restart-walker ;;
+      *Waybar*) edit_in_nvim ~/.config/waybar/config.jsonc && $OMARCHY_BIN_PATH/omarchy-restart-waybar ;;
+      *XCompose*) edit_in_nvim ~/.XCompose && $OMARCHY_BIN_PATH/omarchy-restart-xcompose ;;
+      *) show_main_menu ;;
+    esac
+  fi
 }
 
 show_install_menu() {
@@ -247,28 +275,47 @@ show_update_menu() {
 }
 
 show_update_process_menu() {
-  case $(menu "Restart" "  Hypridle\n  Hyprsunset\n  Swayosd\n󰌧  Walker\n󰍜  Waybar") in
-  *Hypridle*) $OMARCHY_BIN_PATH/omarchy-restart-hypridle ;;
-  *Hyprsunset*) $OMARCHY_BIN_PATH/omarchy-restart-hyprsunset ;;
-  *Swayosd*) $OMARCHY_BIN_PATH/omarchy-restart-swayosd ;;
-  *Walker*) $OMARCHY_BIN_PATH/omarchy-restart-walker ;;
-  *Waybar*) $OMARCHY_BIN_PATH/omarchy-restart-waybar ;;
-  *) show_main_menu ;;
-  esac
+  if [ "$OMARCHY_SOFTWARE_ONLY" = "1" ]; then
+    case $(menu "Restart" "  Polybar\n󰌧  Walker") in
+      *Polybar*) $OMARCHY_BIN_PATH/omarchy-restart-polybar ;;
+      *Walker*) $OMARCHY_BIN_PATH/omarchy-restart-walker ;;
+      *) show_main_menu ;;
+    esac
+  else
+    case $(menu "Restart" "  Hypridle\n  Hyprsunset\n  Swayosd\n󰌧  Walker\n󰍜  Waybar") in
+      *Hypridle*) $OMARCHY_BIN_PATH/omarchy-restart-hypridle ;;
+      *Hyprsunset*) $OMARCHY_BIN_PATH/omarchy-restart-hyprsunset ;;
+      *Swayosd*) $OMARCHY_BIN_PATH/omarchy-restart-swayosd ;;
+      *Walker*) $OMARCHY_BIN_PATH/omarchy-restart-walker ;;
+      *Waybar*) $OMARCHY_BIN_PATH/omarchy-restart-waybar ;;
+      *) show_main_menu ;;
+    esac
+  fi
 }
 
 show_update_config_menu() {
-  case $(menu "Use default config" "  Hyprland\n  Hypridle\n  Hyprlock\n  Hyprsunset\n󱣴  Plymouth\n  Swayosd\n󰌧  Walker\n󰍜  Waybar") in
-  *Hyprland*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-hyprland ;;
-  *Hypridle*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-hypridle ;;
-  *Hyprlock*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-hyprlock ;;
-  *Hyprsunset*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-hyprsunset ;;
-  *Plymouth*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-plymouth ;;
-  *Swayosd*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-swayosd ;;
-  *Walker*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-walker ;;
-  *Waybar*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-waybar ;;
-  *) show_main_menu ;;
-  esac
+  if [ "$OMARCHY_SOFTWARE_ONLY" = "1" ]; then
+    case $(menu "Use default config" "  i3\n  Polybar\n  Picom\n  Dunst\n󰌧  Walker") in
+      *i3*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-i3 ;;
+      *Polybar*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-polybar ;;
+      *Picom*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-picom ;;
+      *Dunst*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-dunst ;;
+      *Walker*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-walker ;;
+      *) show_main_menu ;;
+    esac
+  else
+    case $(menu "Use default config" "  Hyprland\n  Hypridle\n  Hyprlock\n  Hyprsunset\n󱣴  Plymouth\n  Swayosd\n󰌧  Walker\n󰍜  Waybar") in
+      *Hyprland*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-hyprland ;;
+      *Hypridle*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-hypridle ;;
+      *Hyprlock*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-hyprlock ;;
+      *Hyprsunset*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-hyprsunset ;;
+      *Plymouth*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-plymouth ;;
+      *Swayosd*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-swayosd ;;
+      *Walker*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-walker ;;
+      *Waybar*) present_terminal $OMARCHY_BIN_PATH/omarchy-refresh-waybar ;;
+      *) show_main_menu ;;
+    esac
+  fi
 }
 
 show_system_menu() {

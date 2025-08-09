@@ -1,0 +1,8 @@
+#!/bin/bash
+# Refresh Dunst config and restart dunst
+if pgrep -x dunst >/dev/null; then
+  pkill dunst
+  sleep 0.5
+fi
+dunst &
+disown

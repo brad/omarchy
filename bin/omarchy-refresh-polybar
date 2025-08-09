@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Ensure the config directory exists
+mkdir -p ~/.config/polybar
+
+# Copy the default config
+cp ~/.local/share/omarchy/default/polybar/config.ini ~/.config/polybar/
+
+# Restart polybar
+~/.local/share/omarchy/bin/omarchy-restart-polybar

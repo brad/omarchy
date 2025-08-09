@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Refresh i3 config from Omarchy default
+~/.local/share/omarchy/bin/omarchy-refresh-config i3/config
+
+# Refresh i3 configuration
+i3-msg reload
+
+# Restart picom if it's running
+if pgrep picom > /dev/null; then
+    pkill picom
+    picom -b
+fi
+
+# Restart dunst
+pkill dunst
+dunst &
+
+# Restart i3status by restarting i3bar
+i3-msg restart

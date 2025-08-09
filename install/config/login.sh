@@ -223,7 +223,7 @@ PartOf=graphical.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/seamless-login uwsm start -- hyprland.desktop
+ExecStart=/usr/local/bin/seamless-login uwsm start -- $( [ "$OMARCHY_SOFTWARE_ONLY" = "1" ] && echo i3 || echo hyprland ).desktop
 Restart=always
 RestartSec=2
 User=$USER

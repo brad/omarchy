@@ -1,0 +1,26 @@
+# Omarchy i3 config
+
+# Use Super (Win) key as mod key
+set $mod Mod4
+
+# Font for window titles
+font pango:monospace 10
+
+# Use Mouse+$mod to drag floating windows
+floating_modifier $mod
+
+# Autostart applications
+exec --no-startup-id picom -b  # Compositor
+exec --no-startup-id dunst     # Notification daemon
+exec --no-startup-id polkit-gnome-authentication-agent-1  # Polkit agent
+exec --no-startup-id ~/.local/share/omarchy/bin/omarchy-restart-polybar  # Start polybar
+
+# Omarchy theme include (import theme colors)
+include ~/.config/omarchy/current/theme/i3.config
+
+# Omarchy default keybinding fragments (do not edit these directly)
+include ~/.local/share/omarchy/default/i3/bindings/media.conf
+include ~/.local/share/omarchy/default/i3/bindings/tiling.conf
+include ~/.local/share/omarchy/default/i3/bindings/utilities.conf
+
+# Add your own custom keybindings below to override Omarchy defaults...

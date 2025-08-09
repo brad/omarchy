@@ -1,7 +1,14 @@
 #!/bin/bash
 
+if [[ -f "$HOME/.local/state/omarchy/software-only.mode" ]]; then
+  OMARCHY_SOFTWARE_ONLY=1
+fi
 # Lock the screen
-pidof hyprlock || hyprlock
+if [ "$OMARCHY_SOFTWARE_ONLY" = "1" ]; then
+  betterlockscreen -l dim
+else
+  pidof hyprlock || hyprlock
+fi
 
 # Ensure 1password is locked
 if pgrep -x "1password" >/dev/null; then

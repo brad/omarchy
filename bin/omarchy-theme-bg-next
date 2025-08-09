@@ -42,7 +42,17 @@ else
   # Set new background symlink
   ln -nsf "$NEW_BACKGROUND" "$CURRENT_BACKGROUND_LINK"
 
-  # Relaunch swaybg
-  pkill -x swaybg
-  setsid uwsm app -- swaybg -i "$CURRENT_BACKGROUND_LINK" -m fill >/dev/null 2>&1 &
+  # Detect software-only mode from state file if not set
+  if [[ -f "$HOME/.local/state/omarchy/software-only.mode" ]]; then
+    OMARCHY_SOFTWARE_ONLY=1
+  fi
+  if [ "$OMARCHY_SOFTWARE_ONLY" = "1" ]; then
+    # Use feh for X11/i3
+    pkill -x feh
+    feh --bg-fill "$CURRENT_BACKGROUND_LINK"
+  else
+    # Relaunch swaybg for Hyprland/Wayland
+    pkill -x swaybg
+    setsid uwsm app -- swaybg -i "$CURRENT_BACKGROUND_LINK" -m fill >/dev/null 2>&1 &
+  fi
 fi

@@ -1,0 +1,8 @@
+#!/bin/bash
+# Refresh Picom config and restart picom
+if pgrep -x picom >/dev/null; then
+  pkill -HUP picom || pkill picom
+  sleep 0.5
+fi
+picom --config ~/.config/picom/picom.conf --experimental-backends &
+disown
