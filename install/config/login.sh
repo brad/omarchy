@@ -4,6 +4,9 @@
 if ! command -v uwsm &>/dev/null || ! command -v plymouth &>/dev/null; then
   yay -S --noconfirm --needed uwsm plymouth
 fi
+if [[ -f "$HOME/.local/state/omarchy/software-only.mode" ]]; then
+  OMARCHY_SOFTWARE_ONLY=1
+fi
 
 # ==============================================================================
 # PLYMOUTH SETUP
